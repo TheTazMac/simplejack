@@ -125,7 +125,7 @@ while player <= amountofPlayers do
   printfn ""
   System.Threading.Thread.Sleep(1200)
   printfn "Player %i drew: %A" player (cardDeck.Item(a+1))
-  System.Threading.Thread.Sleep(1800)
+  System.Threading.Thread.Sleep(1200)
   printfn "Player %i drew: %A" player (cardDeck.Item(b+1))
   System.Threading.Thread.Sleep(1000)
   printfn "Player %i Your card value is: %i" player playerVal
