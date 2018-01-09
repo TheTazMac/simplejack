@@ -10,10 +10,10 @@ open SimpleJackClasses
 //---------------------------Regular expression--------------------------
 // Add regular expressions to allow mistypes when reading user input
 let numberReg = Regex "^[1-5]$"
-let startReg = Regex "((?i)(\w+)?start(\w+)?)"
-let standReg = Regex "((?i)(\w+)?stand(\w+)?)"
-let hitReg = Regex "((?i)(\w+)?hit(\w+)?)"
-let aiReg = Regex "((?i)(\w+)?ai(\w+)?)"
+let startReg = Regex "((?i)(\w+)?s(\w+)?)"
+let standReg = Regex "((?i)(\w+)?s(\w+)?)"
+let hitReg = Regex "((?i)(\w+)?h(\w+)?)"
+let aiReg = Regex "((?i)(\w+)?a(\w+)?)"
 let aReg = Regex "((?i)a)"
 let bReg = Regex "((?i)b)"
 
