@@ -8,73 +8,28 @@ open System.Collections.Generic
 // Adds a Random Number Generator
 let rnd = System.Random()
 
-//makes a list from 1..52
-let cards = [|1..52|]
-let cardses = new List<int>(0)
-cardses.AddRange(cards)
-
-/// <summary>
-/// Creates a cache to save the progress of the drawn deck.
-/// </summary>
-/// <param name="i">Index in the array, assosiated to a card value</param>
-/// <param name="casheCheck">Checks if the indexed value is in the cache if not add it to it.</param>
-/// <returns>
-/// Returns a cashe which changes when each card is drawn.
-/// </returns>
-
-let mutable cache = [0]
-//cache to check whether the same cards gets generated or not
-let rec cacheCheck (i: int) : int =
-//if same card gets generated, then we go to next index
-  if (List.contains i cache) = true then
-    cacheCheck(i + 1)
-  elif cardses.Count <= i then
-  //catch-all, since we will never draw higher than 52
-    0
-  else
-    cache <- i :: cache
-    cardses.Item(i)
-
-/// <summary>
-/// Simulates the act of drawing a hand from a deck of cards.
-/// </summary>
-/// <param name="card1">simulates the first card</param>
-/// <param name="card2">simulates the second card </param>
-/// <returns>
-/// The act of drawing a first and second card in a hand, which is 2 ints.
-/// </returns>
-type DrawHand = class
-    val mutable card1 : int
-    val mutable card2 : int
+type CardDeck = class
+    val mutable deck : int list
+    val random : System.Random
 
     new() =
-        {card1 = cacheCheck(rnd.Next(1,52))
-         card2 = cacheCheck(rnd.Next(1,52))
-         }
+        {
+         random = System.Random();
+         deck = []
+        }
 
-    member this.FirstCard() = this.card1
-    member this.SecondCard() = this.card2
+    member this.Shuffle() =
+        this.deck <- List.sortBy (fun x -> this.random.Next()) [1..52]
+
+    member this.Draw() =
+        if this.deck.IsEmpty then
+            this.Shuffle()
+        let draw = this.deck.Head
+        this.deck <- this.deck.Tail
+        draw
 
 end
 
-/// <summary>
-/// The act of drawing a random card from the deck.
-/// </summary>
-/// <param name="card1">A card drawn</param>
-/// <returns>
-/// The way to draw a card.
-/// </returns>
-
-type DrawCard = class
-    val mutable card1 : int
-
-    new() =
-        {card1 = cacheCheck(rnd.Next(1,52))
-         }
-
-    member this.Card() = this.card1
-
-end
 
 let extract (r:Regex) (s:string) : string option =
   let m = r.Match s
@@ -104,5 +59,3 @@ let RealValueConverter (card: string) : int =
   | _ when (royalReg.IsMatch a = true) -> 10
   | _ when (aceReg.IsMatch a = true) -> 11
   | _ -> 0
-
-
