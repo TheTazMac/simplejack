@@ -28,31 +28,15 @@ type CardDeck = class
         this.deck <- this.deck.Tail
         draw
 
-end
-(*
-type UnitTest = class
-    val mutable card1 : int
-    val mutable card2 : int
-    val mutable deck : int list
+    member this.getDeck() = this.deck
 
-    new((card1)(card2)) =
-        {
-         card1 = firstcard
-         card2 = secondcard
-        }
 
-    member this.FirstCard() = this.card1
-    member this.SecondCard() = this.card2
-
-    member this.Draw() =
-        if this.deck.IsEmpty then
-            this.Shuffle()
-        let draw = this.deck.Head
-        this.deck <- this.deck.Tail
-        draw
+    // for testing if we want to draw a specific card/number
+    member this.Draw(a: int) = a
 
 end
-*)
+
+
 let extract (r:Regex) (s:string) : string option =
   let m = r.Match s
   in if m.Success then Some (string(m.Groups.[1]))

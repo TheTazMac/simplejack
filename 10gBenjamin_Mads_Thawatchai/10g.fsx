@@ -39,7 +39,6 @@ cardDeck.AddRange(clubs)
 cardDeck.AddRange(diamonds)
 cardDeck.AddRange(hearts)
 cardDeck.AddRange(spades)
-cardDeck.Add("0") // protective out-of-index
 
 //sets the amount of players to 0 at the start of the game
 let mutable amountofPlayers = 0
@@ -50,32 +49,17 @@ let result = new List<int>(0)
 // Actual random shuffled deck of ints
 let DeckofCards = CardDeck()
 do DeckofCards.Shuffle()
+
+
 // ---------------------------OPTIONS-----------------------
-
-
-
-// --unit
-
-//         draw 52 cards
-let mutable drawtest = 0
-while drawtest < 53 do
-    let e = DeckofCards.Draw()
-    printfn "%A" (cardDeck.Item(e))
-    drawtest <- drawtest + 1
-
-//  first and last card
-printfn "First card: %b" ((cardDeck.Item(1)) = "Ace of Clubs")
-printfn "Second card: %A" ((cardDeck.Item(52)) = "King of Spades")
-
-// --unit
 
 //introduction text
 printfn ""
 do Console.WriteLine "Welcome to SimpleJack!"
 printfn ""
-do Console.WriteLine "Write 'start' to begin..."
+do Console.WriteLine "Write 'start' to begin or 'unit' to run tests..."
 //user input to begin the game
-let r = Console.ReadLine()
+let mutable r = Console.ReadLine()
 
 
 /// <summary>
@@ -101,8 +85,47 @@ while 1 > amountofPlayers do
                                           | _ when (numberReg.IsMatch r2 = true) -> amountofPlayers <- (int(r2))
                                           //error message if a number 1..5 is not written
                                           | _ -> Console.WriteLine "That amount is not supported."
-  | _ when (unitReg.IsMatch r = true) -> printfn "Card Deck is: %A" DeckofCards
-                                         amountofPlayers <- 1
+  | _ when (unitReg.IsMatch r = true) -> printfn ""
+                                         Console.WriteLine "Testing our Card deck.."
+                                         System.Threading.Thread.Sleep(hiSleep)
+                                         printfn "First card: %b" ((cardDeck.Item(1)) = "Ace of Clubs")
+                                         printfn "Last card: %A" ((cardDeck.Item(52)) = "King of Spades")
+                                         printfn ""
+                                         let mutable drawtest = 0
+                                         Console.WriteLine "Drawing 3 cards..."
+                                         while drawtest < 3 do
+                                             let e = DeckofCards.Draw()
+                                             printfn "We drew: %A" (cardDeck.Item(e))
+                                             System.Threading.Thread.Sleep(lowSleep)
+                                             printfn "RealValueConverter: %A" (RealValueConverter(cardDeck.Item(e)))
+                                             System.Threading.Thread.Sleep(lowSleep)
+                                             printfn "It is not in the deck anymore: %b" (not (List.contains e (DeckofCards.getDeck())))
+                                             System.Threading.Thread.Sleep(medSleep)
+                                             printfn ""
+                                             drawtest <- drawtest + 1
+                                         let unitfirst = DeckofCards.Draw(1)
+                                         let unitsecond = DeckofCards.Draw(14)
+                                         let mutable unitVal = (RealValueConverter(cardDeck.Item(unitfirst))) + (RealValueConverter(cardDeck.Item(unitsecond)))
+                                         if ((RealValueConverter(cardDeck.Item(unitfirst))) + (RealValueConverter(cardDeck.Item(unitsecond)))) = 22 then
+                                           unitVal <- unitVal - 10
+                                         printfn "Draw an Ace: %b" ((cardDeck.Item(unitfirst)) = "Ace of Clubs")
+                                         printfn "Our hand has the value 11: %b" ((RealValueConverter(cardDeck.Item(unitfirst))) = 11)
+                                         printfn "Draw another ace: %b" ((cardDeck.Item(unitsecond)) = "Ace of Diamonds")
+                                         printfn "Our hand now has the value 12: %b" (unitVal = 12)
+                                         printfn ""
+                                         let mutable unitDraw = DeckofCards.Draw(27)
+                                         if (RealValueConverter(cardDeck.Item(unitDraw)) = 11) && unitVal > 21 then
+                                           unitVal <- unitVal - 10
+                                         System.Threading.Thread.Sleep(medSleep)
+                                         printfn "Draw another ace: %b" ((cardDeck.Item(unitDraw)) = "Ace of Hearts")
+                                         printfn "Our hand now has the value 13: %b" (unitVal = 13)
+                                         unitDraw <- DeckofCards.Draw(40)
+                                         System.Threading.Thread.Sleep(medSleep)
+                                         printfn "Draw another ace: %b" ((cardDeck.Item(unitDraw)) = "Ace of Spades")
+                                         printfn "Our hand now has the value 14: %b" (unitVal = 14)
+                                         Console.WriteLine "UNIT TEST COMPLETE: Quitting.."
+                                         System.Threading.Thread.Sleep(hiSleep)
+                                         r <- "quit"
   //program shuts down if startReg is not fulfilled
   | _ -> failwith "Quitting..."
 
