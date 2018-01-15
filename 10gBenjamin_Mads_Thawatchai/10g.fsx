@@ -45,7 +45,9 @@ let mutable amountofPlayers = 0
 // makes a var player
 let mutable player = 1
 // list to hold and save results
-let result = new List<int>(0)
+let result = Results()
+result.Save(0) // account for 0 index
+
 // Actual random shuffled deck of ints
 let DeckofCards = CardDeck()
 do DeckofCards.Shuffle()
@@ -61,17 +63,6 @@ do Console.WriteLine "Write 'start' to begin or 'unit' to run tests..."
 //user input to begin the game
 let mutable r = Console.ReadLine()
 
-
-/// <summary>
-/// Asks how many players will play, and awaits the input.
-/// </summary>
-/// <remarks>
-/// Keeps asking until you type a number between 1 and 5. That is assured from regex in line 12.
-/// </remarks>
-/// <returns>
-/// Amount of players about to play.
-/// </returns>
-
 //-------------------------------- How many players ------------------------------------------------
 while 1 > amountofPlayers do
   match r with
@@ -79,53 +70,57 @@ while 1 > amountofPlayers do
   | _ when (startReg.IsMatch r = true) -> Console.WriteLine "How many players?"
                                           //user input
                                           let r2 = Console.ReadLine()
-                                          printfn ""
                                           match r2 with
                                           //numberReg sets limit to 5 players
                                           | _ when (numberReg.IsMatch r2 = true) -> amountofPlayers <- (int(r2))
                                           //error message if a number 1..5 is not written
                                           | _ -> Console.WriteLine "That amount is not supported."
-  | _ when (unitReg.IsMatch r = true) -> printfn ""
-                                         Console.WriteLine "Testing our Card deck.."
-                                         System.Threading.Thread.Sleep(hiSleep)
-                                         printfn "First card: %b" ((cardDeck.Item(1)) = "Ace of Clubs")
-                                         printfn "Last card: %A" ((cardDeck.Item(52)) = "King of Spades")
-                                         printfn ""
+  | _ when (unitReg.IsMatch r = true) -> Console.WriteLine "\n Testing our Card deck..\n"
+                                         wait(1500)
+                                         // test first two cards
+                                         printfn "First card: %b \n" ((cardDeck.Item(1)) = "Ace of Clubs")
+                                         printfn "Last card: %A \n" ((cardDeck.Item(52)) = "King of Spades")
                                          let mutable drawtest = 0
-                                         Console.WriteLine "Drawing 3 cards..."
+                                         Console.WriteLine "Drawing 3 cards... \n"
+                                         // draw 3 cards and see if they're real value and not in the deck after
                                          while drawtest < 3 do
                                              let e = DeckofCards.Draw()
                                              printfn "We drew: %A" (cardDeck.Item(e))
-                                             System.Threading.Thread.Sleep(lowSleep)
+                                             wait(500)
                                              printfn "RealValueConverter: %A" (RealValueConverter(cardDeck.Item(e)))
-                                             System.Threading.Thread.Sleep(lowSleep)
+                                             wait(500)
                                              printfn "It is not in the deck anymore: %b" (not (List.contains e (DeckofCards.getDeck())))
-                                             System.Threading.Thread.Sleep(medSleep)
+                                             wait(1000)
                                              printfn ""
                                              drawtest <- drawtest + 1
+                                         // drawing all 4 aces in a row, check if we bust
                                          let unitfirst = DeckofCards.Draw(1)
                                          let unitsecond = DeckofCards.Draw(14)
                                          let mutable unitVal = (RealValueConverter(cardDeck.Item(unitfirst))) + (RealValueConverter(cardDeck.Item(unitsecond)))
+                                         // makes sure we don't bust if we draw an ace that puts us above 21
                                          if ((RealValueConverter(cardDeck.Item(unitfirst))) + (RealValueConverter(cardDeck.Item(unitsecond)))) = 22 then
                                            unitVal <- unitVal - 10
                                          printfn "Draw an Ace: %b" ((cardDeck.Item(unitfirst)) = "Ace of Clubs")
                                          printfn "Our hand has the value 11: %b" ((RealValueConverter(cardDeck.Item(unitfirst))) = 11)
                                          printfn "Draw another ace: %b" ((cardDeck.Item(unitsecond)) = "Ace of Diamonds")
-                                         printfn "Our hand now has the value 12: %b" (unitVal = 12)
-                                         printfn ""
+                                         printfn "Our hand now has the value 12: %b \n" (unitVal = 12)
                                          let mutable unitDraw = DeckofCards.Draw(27)
+                                         unitVal <- unitVal + RealValueConverter(cardDeck.Item(unitDraw))
                                          if (RealValueConverter(cardDeck.Item(unitDraw)) = 11) && unitVal > 21 then
                                            unitVal <- unitVal - 10
-                                         System.Threading.Thread.Sleep(medSleep)
+                                         wait(500)
                                          printfn "Draw another ace: %b" ((cardDeck.Item(unitDraw)) = "Ace of Hearts")
                                          printfn "Our hand now has the value 13: %b" (unitVal = 13)
                                          unitDraw <- DeckofCards.Draw(40)
-                                         System.Threading.Thread.Sleep(medSleep)
+                                         unitVal <- unitVal + RealValueConverter(cardDeck.Item(unitDraw))
+                                         if (RealValueConverter(cardDeck.Item(unitDraw)) = 11) && unitVal > 21 then
+                                           unitVal <- unitVal - 10
+                                         wait(500)
                                          printfn "Draw another ace: %b" ((cardDeck.Item(unitDraw)) = "Ace of Spades")
-                                         printfn "Our hand now has the value 14: %b" (unitVal = 14)
-                                         Console.WriteLine "UNIT TEST COMPLETE: Quitting.."
-                                         System.Threading.Thread.Sleep(hiSleep)
-                                         r <- "quit"
+                                         printfn "Our hand now has the value 14: %b \n" (unitVal = 14)
+                                         Console.WriteLine "UNIT TEST COMPLETE: \n Write 'start' to play or 'quit' to stop."
+                                         let r5 = Console.ReadLine()
+                                         r <- r5
   //program shuts down if startReg is not fulfilled
   | _ -> failwith "Quitting..."
 
@@ -166,11 +161,11 @@ while player <= amountofPlayers do
   let mutable playerVal = (RealValueConverter(cardDeck.Item(firstcard))) + (RealValueConverter(cardDeck.Item(secondcard)))
   //outputs what cards the player gets. Added sleep to give it a better feeling
   printfn ""
-  System.Threading.Thread.Sleep(medSleep)
+  wait(medSleep)
   printfn "Player %i drew: %A" player (cardDeck.Item(firstcard))
-  System.Threading.Thread.Sleep(medSleep)
+  wait(medSleep)
   printfn "Player %i drew: %A" player (cardDeck.Item(secondcard))
-  System.Threading.Thread.Sleep(medSleep)
+  wait(medSleep)
   printfn "Player %i Your card value is: %i" player playerVal
   //a divider to give a better overview after each step
   printfn "------------------------------"
@@ -199,19 +194,19 @@ while player <= amountofPlayers do
                                              printfn "------------------------------"
                                            //if playerVal is > 21 then player went bust
                                            elif playerVal > 21 then
-                                             result.Add(playerVal)
+                                             result.Save(playerVal)
                                              printfn "Player %i you went bust with %i!" player playerVal
                                              printfn "------------------------------"
-                                             System.Threading.Thread.Sleep(hiSleep)
+                                             wait(hiSleep)
                                            else
                                              //outputs players card value
-                                             System.Threading.Thread.Sleep(hiSleep)
+                                             wait(hiSleep)
                                              printfn "Your card value is: %i" playerVal
                                              printfn "------------------------------"
     //stand option: matching with regular expression so misstypes also will be acknowledged
     | _ when (standReg.IsMatch r3 = true) -> printfn ""
                                             //shows the players card value when player stands
-                                             result.Add(playerVal)
+                                             result.Save(playerVal)
                                              printfn "Player %i stood with %A." player playerVal
                                              printfn "------------------------------"
                                              printfn ""
@@ -228,29 +223,29 @@ while player <= amountofPlayers do
                                                        printfn ""
                                                        printfn "------------------------------"
                                                        printfn "Player %i stood with %i" player playerVal
-                                                       result.Add(playerVal)
+                                                       result.Save(playerVal)
                                                        printfn "------------------------------"
-                                                       System.Threading.Thread.Sleep(hiSleep)
+                                                       wait(hiSleep)
                                                        playerVal <- 51
                                                        //if playerVal is > 21 then AI went bust
                                                      else if playerVal > 21 then
                                                        printfn ""
                                                        printfn "------------------------------"
                                                        printfn "Player %i went bust with %i" player playerVal
-                                                       result.Add(playerVal)
+                                                       result.Save(playerVal)
                                                        printfn "------------------------------"
-                                                       System.Threading.Thread.Sleep(hiSleep)
+                                                       wait(hiSleep)
                                                        playerVal <- 51
                                                      else
                                                      //DrawCard class gets called to give the AI cards
                                                        let drawncard = DeckofCards.Draw()
-                                                       System.Threading.Thread.Sleep(hiSleep)
+                                                       wait(hiSleep)
                                                        printfn "------------------------------"
                                                        printfn "Player %i drew: %A" player (cardDeck.Item(drawncard))
                                                        playerVal <- playerVal + (RealValueConverter(cardDeck.Item(drawncard)))
                                                        printfn "Player %i card value is: %i" player playerVal
                                                        printfn "------------------------------"
-                                                       System.Threading.Thread.Sleep(medSleep)
+                                                       wait(medSleep)
                                           //bReg gets matched, a regular expression, so either b or B gets acknowledged. AI option B
                                           | _ when (bReg.IsMatch r4 = true) ->
                                             while playerVal <= 50 do
@@ -261,9 +256,9 @@ while player <= amountofPlayers do
                                                        printfn ""
                                                        printfn "------------------------------"
                                                        printfn "Player %i went bust with %i" player playerVal
-                                                       result.Add(playerVal)
+                                                       result.Save(playerVal)
                                                        printfn "------------------------------"
-                                                       System.Threading.Thread.Sleep(hiSleep)
+                                                       wait(hiSleep)
                                                        playerVal <- 51
                                                        //AI picks between 0 and 2 where 0 = hit and 2 = stand
                                                      else if (rnd.Next(0,2)) = 0 then
@@ -272,15 +267,15 @@ while player <= amountofPlayers do
                                                        playerVal <- playerVal + (RealValueConverter(cardDeck.Item(drawncard)))
                                                        printfn "Player %i card value is: %i" player playerVal
                                                        printfn "------------------------------"
-                                                       System.Threading.Thread.Sleep(medSleep)
+                                                       wait(medSleep)
                                                      else
                                                      //outputs the value that AI stands with
                                                        printfn ""
                                                        printfn "------------------------------"
                                                        printfn "Player %i stood with %i" player playerVal
-                                                       result.Add(playerVal)
+                                                       result.Save(playerVal)
                                                        printfn "------------------------------"
-                                                       System.Threading.Thread.Sleep(medSleep)
+                                                       wait(medSleep)
                                                        playerVal <- 51
                                           | _ -> Console.WriteLine "Unknown Strategy."
     //message error if player writes something that isn't allowed
@@ -292,9 +287,11 @@ while player <= amountofPlayers do
 printfn ""
 printfn "RESULTS:"
 //loop that outputs the result of the players
+result.ReverseList()
+
 for i=1 to amountofPlayers do
-  System.Threading.Thread.Sleep(lowSleep)
-  printfn "Player %i ended on %A" i (result.Item(i-1))
+  wait(lowSleep)
+  printfn "Player %i ended on %A" i (result.Item(i))
 
 
 /// <summary>
@@ -319,60 +316,54 @@ let dealerfirst = DeckofCards.Draw()
 let dealersecond = DeckofCards.Draw()
 //RealValueConverter gets called and converts the cards that the Dealer gets
 let mutable dealerVal = (RealValueConverter(cardDeck.Item(dealerfirst))) + (RealValueConverter(cardDeck.Item(dealersecond)))
-//start the dealerResult with 0
-let mutable dealerResult = 0
-dealerResult <- dealerVal
+result.setDealer(dealerVal)
 printfn ""
-System.Threading.Thread.Sleep(hiSleep)
+wait(hiSleep)
 //Dealer gets their cards with the value put together
 printfn "Dealer drew: %A" (cardDeck.Item(dealerfirst))
-System.Threading.Thread.Sleep(hiSleep)
+wait(hiSleep)
 printfn "Dealer drew: %A" (cardDeck.Item(dealersecond))
-System.Threading.Thread.Sleep(medSleep)
+wait(medSleep)
 printfn "Dealer's card value is: %i" dealerVal
 printfn ""
 while dealerVal <= 50 do
   //if dealerVal is >= 17 and <= 21 then dealer should stand
   if 17 <= dealerVal && 21 >= dealerVal then
-    System.Threading.Thread.Sleep(hiSleep)
+    wait(hiSleep)
     printfn ""
     printfn "Dealer stood with: %i" dealerVal
     dealerVal <- 51
     //if dealerVal is > 21 then dealer goes bust
   else if dealerVal > 21 then
-    System.Threading.Thread.Sleep(hiSleep)
+    wait(hiSleep)
     printfn "Dealer went bust with %i!" dealerVal
     dealerVal <- 51
   else
   //drawing cards for the dealer
     let dealerdraw = DeckofCards.Draw()
-    System.Threading.Thread.Sleep(hiSleep)
+    wait(hiSleep)
     printfn "Dealer drew: %A" (cardDeck.Item(dealerdraw))
     dealerVal <- dealerVal + (RealValueConverter(cardDeck.Item(dealerdraw)))
-    dealerResult <- dealerVal
-    System.Threading.Thread.Sleep(medSleep)
+    // making sure dealer doesn't if ace puts dealer above 21.
+    if (RealValueConverter(cardDeck.Item(dealerdraw)) = 11) && dealerVal > 21 then
+      dealerVal <- dealerVal - 10
+    //update dealer
+    result.setDealer(dealerVal)
+    wait(medSleep)
     //dealer value output
     printfn "Dealer card value is: %i" dealerVal
 
 /// <summary>
-/// Result list outputs whether the players won against dealer or lost against him or if the dealer/player went bust.
+/// Result list outputs whether the players won against dealer or lost against him or if the dealer/player went bust, via the class
+/// member Print.
 /// </summary>
 /// <returns>
-/// returns a list of each players standings against the dealerResult and their own result.
+/// returns a list of each players standings against the dealer's result and their own result.
 /// </returns>
 
 //---------------------------------------------- Result Screen ---------------------------------------------------------------
 printfn ""
 printfn ""
-printfn "______________RESULTS_______________"
-printfn ""
-//loop that outputs the Results
-for i=1 to (amountofPlayers) do
-  if result.Item(i-1) > 21 then
-    printfn "Player %i went bust." i
-  elif result.Item(i-1) > dealerResult then
-    printfn "Player %i won with %A vs dealers %A." i (result.Item(i-1)) dealerResult
-  elif dealerResult > 21 && result.Item(i-1) <= 21 then
-    printfn "Dealer went bust and Player %i won!" i
-  else
-    printfn "Player %i lost with %A to dealer's %A." i (result.Item(i-1)) dealerResult
+printfn "______________RESULTS_______________ \n"
+//Prints the results of all the players in the game
+result.Print(amountofPlayers)
