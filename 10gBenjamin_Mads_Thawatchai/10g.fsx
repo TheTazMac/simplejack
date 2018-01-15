@@ -39,7 +39,7 @@ cardDeck.AddRange(clubs)
 cardDeck.AddRange(diamonds)
 cardDeck.AddRange(hearts)
 cardDeck.AddRange(spades)
-cardDeck.Add("0") // protective out-of-index, can be drawn ???
+cardDeck.Add("0") // protective out-of-index
 
 //sets the amount of players to 0 at the start of the game
 let mutable amountofPlayers = 0
@@ -51,6 +51,23 @@ let result = new List<int>(0)
 let DeckofCards = CardDeck()
 do DeckofCards.Shuffle()
 // ---------------------------OPTIONS-----------------------
+
+
+
+// --unit
+
+//         draw 52 cards
+let mutable drawtest = 0
+while drawtest < 53 do
+    let e = DeckofCards.Draw()
+    printfn "%A" (cardDeck.Item(e))
+    drawtest <- drawtest + 1
+
+//  first and last card
+printfn "First card: %b" ((cardDeck.Item(1)) = "Ace of Clubs")
+printfn "Second card: %A" ((cardDeck.Item(52)) = "King of Spades")
+
+// --unit
 
 //introduction text
 printfn ""
@@ -123,20 +140,20 @@ while player <= amountofPlayers do
   let firstcard = DeckofCards.Draw()
   let secondcard = DeckofCards.Draw()
   //Calling the RealValueConverter class to the playerVal function in regards to FirstCard and SecondCard
-  let mutable playerVal = (RealValueConverter(cardDeck.Item(firstcard+1))) + (RealValueConverter(cardDeck.Item(secondcard+1)))
+  let mutable playerVal = (RealValueConverter(cardDeck.Item(firstcard))) + (RealValueConverter(cardDeck.Item(secondcard)))
   //outputs what cards the player gets. Added sleep to give it a better feeling
   printfn ""
   System.Threading.Thread.Sleep(medSleep)
-  printfn "Player %i drew: %A" player (cardDeck.Item(firstcard+1))
+  printfn "Player %i drew: %A" player (cardDeck.Item(firstcard))
   System.Threading.Thread.Sleep(medSleep)
-  printfn "Player %i drew: %A" player (cardDeck.Item(secondcard+1))
+  printfn "Player %i drew: %A" player (cardDeck.Item(secondcard))
   System.Threading.Thread.Sleep(medSleep)
   printfn "Player %i Your card value is: %i" player playerVal
   //a divider to give a better overview after each step
   printfn "------------------------------"
   printfn ""
   // if you draw 2 aces, 1 of them is value 1
-  if ((RealValueConverter(cardDeck.Item(firstcard+1))) + (RealValueConverter(cardDeck.Item(secondcard+1)))) = 22 then
+  if ((RealValueConverter(cardDeck.Item(firstcard))) + (RealValueConverter(cardDeck.Item(secondcard)))) = 22 then
     playerVal <- playerVal - 10
   //if the total value of the players card is <= 21, then the player gets 3 options
   //---------------------------------------- Hit, Stand or AI ----------------------------------------------------------
@@ -149,11 +166,11 @@ while player <= amountofPlayers do
                                            //output what player drew when choosing Hit option
                                            printfn ""
                                            //calling cardDeck to output what card the player gets
-                                           printfn "Player %i drew: %A" player (cardDeck.Item(drawncard+1))
+                                           printfn "Player %i drew: %A" player (cardDeck.Item(drawncard))
                                            //takes playerVal and calls the RealValueConverter to add it with the cardDeck item
-                                           playerVal <- playerVal + (RealValueConverter(cardDeck.Item(drawncard+1)))
+                                           playerVal <- playerVal + (RealValueConverter(cardDeck.Item(drawncard)))
                                            //If you have 2 aces then one of them is value 1
-                                           if (RealValueConverter(cardDeck.Item(drawncard+1)) = 11) && playerVal > 21 then
+                                           if (RealValueConverter(cardDeck.Item(drawncard)) = 11) && playerVal > 21 then
                                              playerVal <- playerVal - 10
                                              printfn "Your card value is: %i" playerVal
                                              printfn "------------------------------"
@@ -206,8 +223,8 @@ while player <= amountofPlayers do
                                                        let drawncard = DeckofCards.Draw()
                                                        System.Threading.Thread.Sleep(hiSleep)
                                                        printfn "------------------------------"
-                                                       printfn "Player %i drew: %A" player (cardDeck.Item(drawncard+1))
-                                                       playerVal <- playerVal + (RealValueConverter(cardDeck.Item(drawncard+1)))
+                                                       printfn "Player %i drew: %A" player (cardDeck.Item(drawncard))
+                                                       playerVal <- playerVal + (RealValueConverter(cardDeck.Item(drawncard)))
                                                        printfn "Player %i card value is: %i" player playerVal
                                                        printfn "------------------------------"
                                                        System.Threading.Thread.Sleep(medSleep)
@@ -228,8 +245,8 @@ while player <= amountofPlayers do
                                                        //AI picks between 0 and 2 where 0 = hit and 2 = stand
                                                      else if (rnd.Next(0,2)) = 0 then
                                                        printfn "------------------------------"
-                                                       printfn "Player %i drew %A" player (cardDeck.Item(drawncard+1))
-                                                       playerVal <- playerVal + (RealValueConverter(cardDeck.Item(drawncard+1)))
+                                                       printfn "Player %i drew %A" player (cardDeck.Item(drawncard))
+                                                       playerVal <- playerVal + (RealValueConverter(cardDeck.Item(drawncard)))
                                                        printfn "Player %i card value is: %i" player playerVal
                                                        printfn "------------------------------"
                                                        System.Threading.Thread.Sleep(medSleep)
@@ -278,16 +295,16 @@ printfn ""
 let dealerfirst = DeckofCards.Draw()
 let dealersecond = DeckofCards.Draw()
 //RealValueConverter gets called and converts the cards that the Dealer gets
-let mutable dealerVal = (RealValueConverter(cardDeck.Item(dealerfirst+1))) + (RealValueConverter(cardDeck.Item(dealersecond+1)))
+let mutable dealerVal = (RealValueConverter(cardDeck.Item(dealerfirst))) + (RealValueConverter(cardDeck.Item(dealersecond)))
 //start the dealerResult with 0
 let mutable dealerResult = 0
 dealerResult <- dealerVal
 printfn ""
 System.Threading.Thread.Sleep(hiSleep)
 //Dealer gets their cards with the value put together
-printfn "Dealer drew: %A" (cardDeck.Item(dealerfirst+1))
+printfn "Dealer drew: %A" (cardDeck.Item(dealerfirst))
 System.Threading.Thread.Sleep(hiSleep)
-printfn "Dealer drew: %A" (cardDeck.Item(dealersecond+1))
+printfn "Dealer drew: %A" (cardDeck.Item(dealersecond))
 System.Threading.Thread.Sleep(medSleep)
 printfn "Dealer's card value is: %i" dealerVal
 printfn ""
@@ -307,8 +324,8 @@ while dealerVal <= 50 do
   //drawing cards for the dealer
     let dealerdraw = DeckofCards.Draw()
     System.Threading.Thread.Sleep(hiSleep)
-    printfn "Dealer drew: %A" (cardDeck.Item(dealerdraw+1))
-    dealerVal <- dealerVal + (RealValueConverter(cardDeck.Item(dealerdraw+1)))
+    printfn "Dealer drew: %A" (cardDeck.Item(dealerdraw))
+    dealerVal <- dealerVal + (RealValueConverter(cardDeck.Item(dealerdraw)))
     dealerResult <- dealerVal
     System.Threading.Thread.Sleep(medSleep)
     //dealer value output
